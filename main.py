@@ -4,7 +4,7 @@ import logging
 from dotenv import load_dotenv
 from openai import OpenAI
 from telegram import Update
-from telegram.ext import ApplicationBuilder, ContextTypes, MessageHandler, filters
+from telegram.ext import ApplicationBuilder, ContextTypes, MessageHandler, filters, CommandHandler
 from menu_handler import load_menu
 from payment import create_order_payment
 
@@ -17,6 +17,21 @@ load_dotenv()
 # Khởi tạo OpenAI client
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
+# Hàm xử lý lệnh /start
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    welcome_text = (
+        f"Chào Anh/Chị nhé! Em là trợ lý ảo của quán 'Shaco Milktea'.\n"
+        "Đây là menu của quán em, Anh/Chị muốn uống gì cứ bảo em tư vấn cho ạ"
+    )
+    # Gửi lời chào
+    await update.message.reply_text(welcome_text)
+    
+    # Bạn có thể gửi luôn ảnh Menu ở đây nếu muốn
+    try:
+        await update.message.reply_photo(photo=open("Menu.PNG", "rb"))
+    except:
+        print("Lỗi không tìm thấy file Menu.PNG")
+
 # Lấy dữ liệu menu
 MENU_DATA = load_menu()
 
@@ -26,8 +41,10 @@ Bạn là nữ chủ quán trà sữa hiền hậu. Quán của bạn tên là '
 Phong cách giao tiếp: 
 - Thân thiện, ấm áp, xưng 'em', gọi khách là 'anh/chị' hoặc 'mình'.
 - Luôn sẵn lòng tư vấn món dựa trên thực đơn bên dưới.
-- Khi khách đặt món thì phải nêu lại tên món, size, số lượng và tổng tiền cho khách
-
+- Khi khách đặt món, phải xác nhận đủ: Tên món, Size (M hoặc L), và Số lượng. Sau đó đợi khách xác nhận.
+- Chỉ gửi mã QR khi khách đã xác nhận đúng order.
+- Bạn PHẢI kết thúc câu trả lời bằng cú pháp: [PAYMENT: số_tiền]
+- Ví dụ: "Dạ anh, vậy của anh 2 ly trà sữa là 70.000đ ạ. Anh đợi em xíu em gửi mã QR nhé! [PAYMENT: 70000]"
 Thực đơn của quán:
 {MENU_DATA}
 
@@ -48,10 +65,6 @@ Quy tắc quan trọng:
 3. Trước khi chốt đơn [PAYMENT], hãy kiểm tra lại tên món và số lượng một lần nữa để tránh nhầm lẫn danh mục.
 4. Khách có thể order theo id của món
 
-Quy trình thanh toán:
-- Khi khách đồng ý mua mới được gửi QR .
-- Bạn PHẢI kết thúc câu trả lời bằng cú pháp: [PAYMENT: số_tiền]
-- Ví dụ: "Dạ anh, vậy của anh 2 ly trà sữa là 70.000đ ạ. Anh đợi em xíu em gửi mã QR nhé! [PAYMENT: 70000]"
 """
 
 # Dictionary để lưu lịch sử trò chuyện của từng người dùng
@@ -135,8 +148,7 @@ if __name__ == '__main__':
         exit()
 
     application = ApplicationBuilder().token(token).build()
-    
-    # Xử lý tin nhắn văn bản
+    application.add_handler(CommandHandler("start", start))
     text_handler = MessageHandler(filters.TEXT & (~filters.COMMAND), handle_message)
     application.add_handler(text_handler)
     

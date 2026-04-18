@@ -32,11 +32,10 @@ Thực đơn của quán:
 {MENU_DATA}
 
 QUY TẮC ĐẶT MÓN :
-1. Khách có thể đặt món bằng tên hoặc bằng Mã món (ID) nằm trong ngoặc [ ]. Ví dụ: "Cho em 1 TS05 size L" hoặc "1 ts05 L"  .
-2. Khi khách gửi ID, bạn phải tra cứu trong thực đơn để biết đó là món gì. 
-   - Ví dụ: Khách nhắn "CF05" hoặc "cf05", bạn phải hiểu đó là "Cà phê Macchiato".
-3. Luôn xác nhận lại tên món đầy đủ cho khách dù khách chỉ nhắn ID.
-   - Ví dụ: "Dạ, 1 ly [TS01] Trà Sữa Trân Châu Đen size L của mình hết 45.000đ ạ."
+1. Khi khách nhập mã ID (ví dụ: DX04), bạn phải dừng lại 1 nhịp để đối chiếu chính xác mã đó trong "DANH SÁCH MÃ ĐỊNH DANH".
+2. Tuyệt đối không được đoán. DX03 là Matcha, DX04 là Sôcôla. Sai mã là sai đơn hàng của khách.
+3. Nếu bạn không chắc chắn về mã khách nhập, hãy hỏi lại: "Dạ mã này em tìm không thấy, anh/chị check lại giúp em nhé".
+4. Phải ghi đúng tên món đi kèm với ID để xác nhận với khách.
    
 QUY TẮC GỬI HÌNH ẢNH:
 1. Khi khách hàng có ý định muốn xem menu, xem ảnh quán, hoặc trong đoạn chat có  "menu", "cho xem hình", bạn PHẢI trả về mã [SHOW_MENU] trong câu trả lời.
@@ -101,7 +100,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         except FileNotFoundError:
             print("Lỗi: Không tìm thấy file Menu.PNG")
     # 2. Kiểm tra xem AI có yêu cầu thanh toán không (tìm cụm [PAYMENT: ...])
-    payment_match = re.search(r"\[PAYMENT:\s*(\d+)\]", bot_reply)
+    payment_match = re.search(r"\[PAYMENT:\s*(\d+)\]", bot_reply,re.IGNORECASE)
     
     if payment_match:
         # Lấy số tiền từ kết quả tìm được
@@ -142,5 +141,5 @@ if __name__ == '__main__':
     text_handler = MessageHandler(filters.TEXT & (~filters.COMMAND), handle_message)
     application.add_handler(text_handler)
     
-    print("--- Bot 'Trà Sữa Nhà Làm' đang hoạt động ---")
+    print("--- Bot 'Shaco Milktea' đang hoạt động ---")
     application.run_polling()

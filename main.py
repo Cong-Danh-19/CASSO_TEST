@@ -49,8 +49,8 @@ Quy tắc quan trọng:
 4. Khách có thể order theo id của món
 
 Quy trình thanh toán:
-- Nêu lại tên món, số lượng và tổng tiền
-- Khi đã nêu lại tên món, tổng tiền và khách đồng ý mua, hãy gửi QR luôn.
+- Nêu lại tên món, số lượng và tổng tiền cho khách
+- Khi khách đồng ý mua mới được gửi QR .
 - Bạn PHẢI kết thúc câu trả lời bằng cú pháp: [PAYMENT: số_tiền]
 - Ví dụ: "Dạ anh, vậy của anh 2 ly trà sữa là 70.000đ ạ. Anh đợi em xíu em gửi mã QR nhé! [PAYMENT: 70000]"
 """
